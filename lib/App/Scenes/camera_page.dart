@@ -3,6 +3,7 @@ import 'package:camera/camera.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'dart:typed_data';
 import '../UI/Menu_buttons.dart';
+import './video_page.dart';
 
 class CameraPage extends StatefulWidget {
   const CameraPage({super.key});
@@ -182,7 +183,7 @@ class _CameraPageState extends State<CameraPage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => const VideoPage(videoUrl: ''),
+                      builder: (_) => const VideoDetailPage(videoIds: ['qLdOxsqeiRA']),
                     ),
                   );
                 },
