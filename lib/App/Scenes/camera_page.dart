@@ -116,30 +116,47 @@ class _CameraPageState extends State<CameraPage> {
                   color: Colors.black,
                   borderRadius: BorderRadius.circular(28),
                 ),
-                child: _isCameraOn && _controller != null
-                    ? ClipRRect(
-                  borderRadius: BorderRadius.circular(28),
-                  child: CameraPreview(_controller!),
-                )
-                    : const Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.photo_camera_outlined,
-                        color: Colors.white54,
-                        size: 74,
+                child: Stack(
+                  children: [
+                    Center(
+                      child: _isCameraOn && _controller != null
+                          ? ClipRRect(
+                        borderRadius: BorderRadius.circular(28),
+                        child: CameraPreview(_controller!),
+                      )
+                          : const Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.photo_camera_outlined, color: Colors.white54, size: 74),
+                          SizedBox(height: 10),
+                          Text('Camera is off', style: TextStyle(color: Colors.white54, fontSize: 13)),
+                        ],
                       ),
-                      SizedBox(height: 10),
-                      Text(
-                        'Camera is off',
-                        style: TextStyle(
-                          color: Colors.white54,
-                          fontSize: 26 / 2,
+                    ),
+
+                    // Upload button
+                    Positioned(
+                      top: 15,
+                      right: 15,
+                      child: GestureDetector(
+                        onTap: () {
+                          print("Gallery button pressed");
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.grey,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: const Icon(
+                            Icons.file_upload_outlined, // This matches your image's icon style
+                            color: Colors.white,
+                            size: 24,
+                          ),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
