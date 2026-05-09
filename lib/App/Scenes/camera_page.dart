@@ -3,15 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'dart:typed_data';
+import '../UI/Menu_buttons.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class CameraPage extends StatefulWidget {
+  const CameraPage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<CameraPage> createState() => _CameraPageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _CameraPageState extends State<CameraPage> {
   CameraController? _controller;
   bool _isCameraOn = false;
   bool _isScanning = false;
@@ -82,28 +83,6 @@ class _HomePageState extends State<HomePage> {
   void dispose() {
     _controller?.dispose();
     super.dispose();
-  }
-
-  Widget _buildSmallActionBox({required IconData icon, required String label, required VoidCallback onTap}) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: MediaQuery.of(context).size.width * 0.26,
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.6),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFFB08968).withOpacity(0.2)),
-        ),
-        child: Column(
-          children: [
-            Icon(icon, color: const Color(0xFF7D5334)),
-            const SizedBox(height: 4),
-            Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
-          ],
-        ),
-      ),
-    );
   }
 
   @override
@@ -195,7 +174,34 @@ class _HomePageState extends State<HomePage> {
           ),
 
           // 2. THE BACKGROUND BOX (Starts after the button)
+          BottomActionBar(
+            actions: [
+              ActionItem(
+                icon: Icons.history,
+                label: "History",
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const VideoPage(videoUrl: ''),
+                    ),
+                  );
+                },
+              ),
 
+              ActionItem(
+                icon: Icons.save,
+                label: "Saved",
+                onTap: () {},
+              ),
+
+              ActionItem(
+                icon: Icons.settings,
+                label: "Settings",
+                onTap: () {},
+              ),
+            ],
+          ),
         ],
       ),
     );

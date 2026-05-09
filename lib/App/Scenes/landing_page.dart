@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'home_page.dart';
-import 'video_page.dart';
+import 'camera_page.dart';
 
 void main() {
   runApp(const LandingApp());
@@ -45,7 +44,7 @@ class LandingPage extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute<void>(
-                          builder: (context) => const HomePage(),
+                          builder: (context) => const CameraPage(),
                         ),
                       );
                     },
