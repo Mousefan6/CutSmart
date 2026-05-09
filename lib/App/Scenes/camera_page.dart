@@ -173,35 +173,8 @@ class _CameraPageState extends State<CameraPage> {
             ),
           ),
 
-          // 2. THE BACKGROUND BOX (Starts after the button)
-          BottomActionBar(
-            actions: [
-              ActionItem(
-                icon: Icons.history,
-                label: "History",
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const VideoDetailPage(videoIds: ['qLdOxsqeiRA']),
-                    ),
-                  );
-                },
-              ),
+          const BottomMenuBar(),
 
-              ActionItem(
-                icon: Icons.save,
-                label: "Saved",
-                onTap: () {},
-              ),
-
-              ActionItem(
-                icon: Icons.settings,
-                label: "Settings",
-                onTap: () {},
-              ),
-            ],
-          ),
         ],
       ),
     );
