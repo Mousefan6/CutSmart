@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'home_page.dart';
-import 'video_page.dart';
 
 void main() {
   runApp(const LandingApp());
