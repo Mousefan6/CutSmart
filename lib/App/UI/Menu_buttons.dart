@@ -1,5 +1,13 @@
+import 'package:cutsmart/App/Scenes/profile_page.dart';
 import 'package:flutter/material.dart';
 import '../Scenes/video_page.dart';
+import '../Scenes/camera_page.dart';
+import '../Scenes/profile_page.dart';
+import '../Scenes/settings_page.dart';
+import '../Scenes/saved_page.dart';
+
+
+
 
 class BottomMenuBar extends StatelessWidget {
   const BottomMenuBar({super.key});
@@ -16,6 +24,21 @@ class BottomMenuBar extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
 
+
+          _menuButton(
+            context,
+            icon: Icons.save,
+            label: "profile",
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute<void>(
+                  builder: (context) => const ProfilePage(),
+                ),
+              );
+            },
+          ),
+
           _menuButton(
             context,
             icon: Icons.history,
@@ -30,18 +53,49 @@ class BottomMenuBar extends StatelessWidget {
             },
           ),
 
+
+
           _menuButton(
             context,
-            icon: Icons.save,
-            label: "Saved",
-            onTap: () {},
+            icon: Icons.settings,
+            label: "Scanner",
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute<void>(
+                  builder: (context) => const CameraPage(),
+                ),
+              );
+            },
           ),
 
           _menuButton(
             context,
             icon: Icons.settings,
-            label: "Settings",
-            onTap: () {},
+            label: "Saved",
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute<void>(
+                  builder: (context) => const SavedPage(),
+                ),
+              );
+            },
+          ),
+
+
+          _menuButton(
+            context,
+            icon: Icons.save,
+            label: "settings",
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute<void>(
+                  builder: (context) => const SettingsPage(),
+                ),
+              );
+            },
           ),
         ],
       ),
