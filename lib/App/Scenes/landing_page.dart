@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 
+<<<<<<< HEAD
 import 'camera_page.dart';
+=======
+import 'home_page.dart';
+>>>>>>> d3456fb870fb969f69dd10f596d22fa25282ff42
 
 void main() {
   runApp(const LandingApp());
