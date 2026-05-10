@@ -5,6 +5,7 @@ import 'dart:convert';
 
 import '../UI/menu_buttons.dart';
 import '../UI/app_theme.dart';
+import '../Utils/session_manager.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -19,7 +20,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
 
   Future<void> login() async {
-    final url = Uri.parse('http://10.0.2.2:5000/auth/login');
+    final url = Uri.parse("http://10.0.2.2:5000/auth/login");
     try {
       final response = await http.post(
         url,
@@ -29,13 +30,12 @@ class _LoginPageState extends State<LoginPage> {
           'password': _passwordController.text,
         }),
       );
-
-      if (response.statusCode == 200) {
-        // Navigate to Home/Profile on success
-        print("Login Success");
-      } else {
-        setState(() => message = "Login Failed");
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200 && data["success"] == true) {
+        final token = data["session_token"];
+        await SessionManager.instance.saveToken(token);
       }
+
     } catch (e) {
       setState(() => message = "Connection Error");
     }
@@ -125,13 +125,15 @@ class _LoginPageState extends State<LoginPage> {
 
                       const SizedBox(height: 30),
 
-                      // Register Button
+                      // Login Button
                       SizedBox(
                         width: double.infinity,
                         height: 55,
                         child: ElevatedButton(
                           onPressed: () {
                             debugPrint("Logging in: ${_usernameController.text}");
+                            login();
+
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppTheme.accentColor.value,
@@ -159,17 +161,21 @@ class _LoginPageState extends State<LoginPage> {
                           MaterialPageRoute(builder: (context) => const RegisterPage()),
                         ),
                         child: RichText(
-                          text: const TextSpan(
-                            style: TextStyle(fontSize: 16, fontFamily: 'Georgia'),
+                          text: TextSpan(
+                            style: const TextStyle(fontSize: 16, fontFamily: 'Georgia'),
                             children: [
                               TextSpan(
                                 text: "Don't have an account? ",
-                                style: TextStyle(color: Color(0xFF7D5334)),
+                                style: TextStyle(
+                                  color: AppTheme.accentColor.value,
+                                  decoration: TextDecoration.underline,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                               TextSpan(
                                 text: "Register here",
                                 style: TextStyle(
-                                  color: Colors.blue,
+                                  color: AppTheme.accentColor.value,
                                   decoration: TextDecoration.underline,
                                   fontWeight: FontWeight.bold,
                                 ),
