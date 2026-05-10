@@ -56,7 +56,7 @@ class _RegisterPageState extends State<RegisterPage> {
     } catch (e) {
       print('Connection Error: $e');
     }
-  }
+  } // NEED TO FIX AND CONNECT TO DATABASE
 
   @override
   Widget build(BuildContext context) {
@@ -136,7 +136,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       _buildTextField(
                         controller: _emailController,
                         hint: "Email",
-                        icon: Icons.person_outline,
+                        icon: Icons.email_outlined,
                       ),
 
                       const SizedBox(height: 15),
