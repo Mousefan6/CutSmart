@@ -1,3 +1,4 @@
+import 'package:cutsmart/App/Scenes/history_page.dart';
 import 'package:cutsmart/App/Scenes/login_page.dart';
 import 'package:flutter/material.dart';
 import '../Scenes/camera_page.dart';
@@ -52,7 +53,7 @@ class BottomMenuBar extends StatelessWidget {
                 context,
                 icon: Icons.history,
                 label: "History",
-                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const VideoDetailPage(videoIds: ['qLdOxsqeiRA']))),
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const HistoryPage())),
               ),
             ],
           ),
