@@ -41,6 +41,14 @@ class BottomMenuBar extends StatelessWidget {
 
           _menuButton(
             context,
+            icon: Icons.document_scanner_outlined, // More specific scanner icon
+            label: "settings",
+            isLarge: true, // Special flag for size
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const SettingsPage())),
+          ),
+
+          _menuButton(
+            context,
             icon: Icons.history,
             label: "History",
             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const VideoDetailPage(videoIds: ['qLdOxsqeiRA']))),
