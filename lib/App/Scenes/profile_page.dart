@@ -30,11 +30,18 @@ class _ProfilePageState extends State<ProfilePage> {
       final token = await SessionManager.instance.getToken();
 
       final response = await http.get(
-        Uri.parse("http://10.0.2.2:5000/profile"),
+        Uri.parse("http://10.0.2.2:5000/auth/profile"),
         headers: {
+          "Content-Type": "application/json",
           "Authorization": "Bearer $token",
         },
-      ).timeout(const Duration(seconds: 5));
+      );
+
+      print("PROFILE STATUS: ${response.statusCode}");
+      // ... rest of your code
+
+      print("PROFILE STATUS: ${response.statusCode}");
+      print("PROFILE BODY: ${response.body}");
 
       if (response.statusCode == 200) {
         setState(() {
@@ -46,11 +53,10 @@ class _ProfilePageState extends State<ProfilePage> {
           loading = false;
           profile = {
             "username": "Error",
-            "email": "Backend failed"
+            "email": "Backend rejected token"
           };
         });
       }
-
     } catch (e) {
       setState(() {
         loading = false;

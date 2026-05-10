@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import '../UI/menu_buttons.dart';
 import '../UI/app_theme.dart';
+import '../Utils/auth_service.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -42,21 +43,19 @@ class _RegisterPageState extends State<RegisterPage> {
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'username': username,
-          // 'email': email,
+          'email': email,
           'password': password,
         }),
       );
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = jsonDecode(response.body);
-        print('Success: $data');
-      } else {
-        print('Failed with status: ${response.statusCode}');
-        print('Response body: ${response.body}');
+        AuthService.token = data['session_token'];
+        setState(() => message = "Account Created!");
       }
     } catch (e) {
       print('Connection Error: $e');
     }
-  } // NEED TO FIX AND CONNECT TO DATABASE
+  }
 
   @override
   Widget build(BuildContext context) {
