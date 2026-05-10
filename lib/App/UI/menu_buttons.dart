@@ -19,7 +19,7 @@ class BottomMenuBar extends StatelessWidget {
           width: double.infinity,
           decoration: BoxDecoration(
             // Now follows the accent color of your selected palette
-            color: AppTheme.accentColor.value,
+              color: AppTheme.accentColor.value,
           ),
           padding: const EdgeInsets.fromLTRB(10, 20, 10, 40),
           child: Row(
@@ -53,7 +53,7 @@ class BottomMenuBar extends StatelessWidget {
                 context,
                 icon: Icons.history,
                 label: "History",
-                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const HistoryPage())),
+                onTap: () => (),
               ),
             ],
           ),
