@@ -130,6 +130,7 @@ class _HistoryPageState extends State<HistoryPage> {
 
   void _showPopup(String name, Color accentColor) {
     showDialog(
+        
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: AppTheme.cardColor.value,
