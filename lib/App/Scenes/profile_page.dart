@@ -3,7 +3,6 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import '../UI/menu_buttons.dart';
-import '../UI/app_theme.dart'; // Ensure this points to your theme file
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -15,10 +14,62 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   String message = "Loading...";
 
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
     fetchPing();
+  }
+
+  // Future<void> registerUser() async {
+  //   try {
+  //     final response = await http.post(
+  //       Uri.parse('http://10.0.2.2:5000/auth/register'), // Target a register endpoint
+  //       headers: {"Content-Type": "application/json"},
+  //       body: json.encode({
+  //         "username": _usernameController.text,
+  //         "password": _passwordController.text,
+  //       }),
+  //     );
+  //
+  //     final data = json.decode(response.body);
+  //     setState(() {
+  //       message = data['message'] ?? data['error'];
+  //     });
+  //   } catch (e) {
+  //     setState(() {
+  //       message = "Connection failed: $e";
+  //     });
+  //   }
+  // }
+
+  Future<void> register() async {
+    final url = Uri.parse('http://10.0.2.2:5000/auth/register');
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'username': 'mouse',
+          'password': 'secret123',
+        }),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = jsonDecode(response.body);
+        print('Success: $data');
+      } else {
+        print('Failed with status: ${response.statusCode}');
+        print('Response body: ${response.body}');
+      }
+    } catch (e) {
+      print('Connection Error: $e');
+    }
   }
 
   Future<void> fetchPing() async {
@@ -42,15 +93,6 @@ class _ProfilePageState extends State<ProfilePage> {
         message = "Connection failed";
       });
     }
-  // Controllers to grab the text from the fields
-  final TextEditingController _userController = TextEditingController();
-  final TextEditingController _passController = TextEditingController();
-
-  @override
-  void dispose() {
-    _userController.dispose();
-    _passController.dispose();
-    super.dispose();
   }
 
   @override
@@ -76,133 +118,36 @@ class _ProfilePageState extends State<ProfilePage> {
               fontStyle: FontStyle.italic,
               fontWeight: FontWeight.w700,
               color: Color(0xFF7D5334),
-    return ValueListenableBuilder(
-      valueListenable: AppTheme.backgroundColor,
-      builder: (context, Color bgColor, child) {
-        return Scaffold(
-          backgroundColor: bgColor,
-          appBar: AppBar(
-            centerTitle: true,
-            backgroundColor: bgColor,
-            elevation: 0,
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back, color: AppTheme.accentColor.value),
-              onPressed: () => Navigator.pop(context),
-            ),
-            title: Text(
-              'CutSmart',
-              style: TextStyle(
-                fontFamily: 'Georgia',
-                fontSize: 24,
-                fontStyle: FontStyle.italic,
-                fontWeight: FontWeight.w700,
-                color: AppTheme.accentColor.value,
-              ),
             ),
           ),
-          body: Column(
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 30),
-                  child: Column(
-                    children: [
-                      const SizedBox(height: 40),
-                      Icon(Icons.person_add_alt_1,
-                          size: 80,
-                          color: AppTheme.accentColor.value),
-                      const SizedBox(height: 20),
-                      Text(
-                        'Create Account',
-                        style: TextStyle(
-                          color: AppTheme.accentColor.value,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 30),
-
-                      // Username Field
-                      _buildTextField(
-                        controller: _userController,
-                        hint: "Username",
-                        icon: Icons.person_outline,
-                      ),
-
-                      const SizedBox(height: 15),
-
-                      // Password Field
-                      _buildTextField(
-                        controller: _passController,
-                        hint: "Password",
-                        icon: Icons.lock_outline,
-                        isPassword: true,
-                      ),
-
-                      const SizedBox(height: 30),
-
-                      // Register Button
-                      SizedBox(
-                        width: double.infinity,
-                        height: 55,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            print("Registering: ${_userController.text}");
-                            // Add registration logic here
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppTheme.accentColor.value,
-                            foregroundColor: bgColor,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                          ),
-                          child: const Text(
-                            'REGISTER',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              letterSpacing: 1.2,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const BottomMenuBar(),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-          const BottomMenuBar(),
-        ],
-  // Helper method to keep the UI code clean and themed
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String hint,
-    required IconData icon,
-    bool isPassword = false,
-  }) {
-    return TextField(
-      controller: controller,
-      obscureText: isPassword,
-      style: TextStyle(color: AppTheme.accentColor.value),
-      decoration: InputDecoration(
-        hintText: hint,
-        hintStyle: TextStyle(color: AppTheme.accentColor.value.withOpacity(0.5)),
-        prefixIcon: Icon(icon, color: AppTheme.accentColor.value),
-        filled: true,
-        fillColor: AppTheme.backgroundColor.value, // Uses the card color from theme
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(15),
-          borderSide: BorderSide.none,
         ),
-        contentPadding: const EdgeInsets.symmetric(vertical: 18),
+      ),
+
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(message, style: const TextStyle(color: Color(0xFF7D5334), fontSize: 18)),
+            const SizedBox(height: 20),
+            TextField(
+              controller: _usernameController,
+              decoration: const InputDecoration(labelText: 'Username', border: OutlineInputBorder()),
+            ),
+            const SizedBox(height: 10),
+            TextField(
+              controller: _passwordController,
+              obscureText: true, // Hides password characters
+              decoration: const InputDecoration(labelText: 'Password', border: OutlineInputBorder()),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF7D5334)),
+              onPressed: register,
+              child: const Text("Register", style: TextStyle(color: Colors.white)),
+            ),
+          ],
+        ),
       ),
     );
   }
