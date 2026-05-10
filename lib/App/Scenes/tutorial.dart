@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../UI/app_theme.dart'; // Ensure path to AppTheme is correct
+import '../UI/app_theme.dart';
 import 'camera_page.dart';
 
 class SnapPage extends StatelessWidget {
@@ -7,7 +7,6 @@ class SnapPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Listen for color changes globally
     return ValueListenableBuilder(
       valueListenable: AppTheme.backgroundColor,
       builder: (context, Color bgColor, child) {
@@ -18,53 +17,65 @@ class SnapPage extends StatelessWidget {
             backgroundColor: Colors.transparent,
             elevation: 0,
             leading: IconButton(
-              // Back arrow follows accent color
               icon: Icon(Icons.arrow_back, color: AppTheme.accentColor.value),
               onPressed: () => Navigator.pop(context),
             ),
+            // Consistent Branding
+            title: Text(
+              'CutSmart',
+              style: TextStyle(
+                fontFamily: 'Georgia',
+                fontWeight: FontWeight.w900,
+                fontSize: 28,
+                color: AppTheme.accentColor.value,
+              ),
+            ),
+            centerTitle: true,
           ),
-          body: SingleChildScrollView(
+          body: SafeArea(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 10.0),
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: Column(
                 children: [
-                  // Step Cards
+                  const Spacer(flex: 2),
+
+                  // Tutorial Step Cards
                   _buildStepCard('assets/mousesnap1.png', 'Snap!'),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 16),
                   _buildStepCard('assets/mousephone.png', 'Watch!'),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 16),
                   _buildStepCard('assets/mousecut.png', 'Cut Smart!'),
 
-                  const SizedBox(height: 40),
+                  const Spacer(flex: 3),
 
-                  // Continue Button
-                  SizedBox(
-                    width: double.infinity,
-                    height: 60,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const CameraPage()),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        // Button color follows accent color
-                        backgroundColor: AppTheme.accentColor.value,
-                        // Text color follows background (contrast)
-                        foregroundColor: bgColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
+                  // Action Button - Moved up with bottom padding
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 40.0), // Adjust this value to move it higher/lower
+                    child: SizedBox(
+                      width: double.infinity,
+                      height: 64,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const CameraPage()),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppTheme.accentColor.value,
+                          foregroundColor: bgColor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          elevation: 0,
                         ),
-                        elevation: 0,
-                      ),
-                      child: const Text(
-                        'Continue',
-                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                        child: const Text(
+                          'Continue',
+                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 30),
                 ],
               ),
             ),
@@ -74,40 +85,38 @@ class SnapPage extends StatelessWidget {
     );
   }
 
-  // Updated helper method to use themed card and text colors
   Widget _buildStepCard(String assetPath, String title) {
     return Container(
       width: double.infinity,
-      height: 180,
+      height: 140, // Slightly tighter height to ensure everything fits perfectly
       decoration: BoxDecoration(
-        // Uses the themed card color (usually white, or dark in dark palettes)
         color: AppTheme.cardColor.value,
-        borderRadius: BorderRadius.circular(35),
+        borderRadius: BorderRadius.circular(28),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 12,
             offset: const Offset(0, 4),
           )
         ],
       ),
-      padding: const EdgeInsets.all(16),
-      child: Column(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      child: Row(
         children: [
           Expanded(
-            child: Image.asset(
-              assetPath,
-              fit: BoxFit.contain,
-            ),
+            flex: 2,
+            child: Image.asset(assetPath, fit: BoxFit.contain),
           ),
-          const SizedBox(height: 10),
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              // Title text follows accent color for consistency
-              color: AppTheme.accentColor.value,
+          const SizedBox(width: 15),
+          Expanded(
+            flex: 3,
+            child: Text(
+              title,
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: AppTheme.accentColor.value,
+              ),
             ),
           ),
         ],
