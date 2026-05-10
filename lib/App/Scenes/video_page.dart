@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
-import '../UI/app_theme.dart';
-import '../UI/menu_buttons.dart'; // Import your global menu bar
 
 class VideoDetailPage extends StatefulWidget {
   final List<String> videoIds;
@@ -22,84 +20,56 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
   }
 
   @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder(
-      valueListenable: AppTheme.backgroundColor,
-      builder: (context, Color bgColor, child) {
-        return Scaffold(
-          backgroundColor: bgColor,
-          appBar: AppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            centerTitle: true,
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back, color: AppTheme.accentColor.value),
-              onPressed: () => Navigator.pop(context),
-            ),
-            title: Text(
-              'CutSmart',
-              style: TextStyle(
-                color: AppTheme.accentColor.value,
-                fontStyle: FontStyle.italic,
-                fontFamily: 'Georgia',
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          body: Column(
-            children: [
-              const SizedBox(height: 20),
-              // SWIPEABLE VIDEO PLAYER SECTION
-              Expanded(
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    PageView.builder(
-                      controller: _pageController,
-                      itemCount: widget.videoIds.length,
-                      onPageChanged: (int page) => setState(() => _currentPage = page),
-                      itemBuilder: (context, index) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFE3D8CD),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        centerTitle: true,
+        title: const Text('CutSmart', style: TextStyle(color: Color(0xFF7D5334), fontStyle: FontStyle.italic)),
+      ),
+      body: Column(
+        children: [
+          const SizedBox(height: 20),
+          // THE SWIPABLE VIDEO PLAYER SECTION
+          Expanded(
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                PageView.builder(
+                  controller: _pageController,
+                  itemCount: widget.videoIds.length,
+                  onPageChanged: (int page) => setState(() => _currentPage = page),
+                  itemBuilder: (context, index) {
+                    return AnimatedBuilder(
+                      animation: _pageController,
+                      builder: (context, child) {
                         return _buildVideoCard(widget.videoIds[index]);
                       },
-                    ),
-                    // LEFT ARROW
-                    Positioned(
-                      left: 10,
-                      child: Icon(Icons.arrow_back_ios,
-                          color: AppTheme.accentColor.value.withOpacity(0.5),
-                          size: 30),
-                    ),
-                    // RIGHT ARROW
-                    Positioned(
-                      right: 10,
-                      child: Icon(Icons.arrow_forward_ios,
-                          color: AppTheme.accentColor.value.withOpacity(0.5),
-                          size: 30),
-                    ),
-                  ],
+                    );
+                  },
                 ),
-              ),
-
-              // PAGE INDICATOR (The Dots)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(widget.videoIds.length, (index) => _buildDot(index)),
-              ),
-
-              const SizedBox(height: 20),
-
-              // REAL BOTTOM MENU BAR (Replaces the mock version)
-              const BottomMenuBar(),
-            ],
+                // LEFT ARROW
+                Positioned(left: 10, child: Icon(Icons.arrow_back_ios, color: Colors.black54, size: 30)),
+                // RIGHT ARROW
+                Positioned(right: 10, child: Icon(Icons.arrow_forward_ios, color: Colors.black54, size: 30)),
+              ],
+            ),
           ),
-        );
-      },
+
+          // PAGE INDICATOR (The Dots)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(widget.videoIds.length, (index) => _buildDot(index)),
+          ),
+
+          const SizedBox(height: 20),
+
+          // MOCK BOTTOM NAV BAR (Matches your image)
+          _buildBottomNav(),
+        ],
+      ),
     );
   }
 
@@ -114,21 +84,14 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
       decoration: BoxDecoration(
         color: Colors.black,
         borderRadius: BorderRadius.circular(40),
-        boxShadow: [
-          BoxShadow(
-              color: Colors.black.withOpacity(0.2),
-              blurRadius: 10,
-              offset: const Offset(0, 5)
-          )
-        ],
+        boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 10, offset: Offset(0, 5))],
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(40),
         child: YoutubePlayer(
           controller: _ytController,
           showVideoProgressIndicator: true,
-          // Progress bar matches the accent color of the theme
-          progressIndicatorColor: AppTheme.accentColor.value,
+          progressIndicatorColor: const Color(0xFFB08968),
         ),
       ),
     );
@@ -141,10 +104,35 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
       margin: const EdgeInsets.all(4),
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: _currentPage == index
-            ? AppTheme.accentColor.value
-            : AppTheme.accentColor.value.withOpacity(0.3),
+        color: _currentPage == index ? Colors.black : Colors.black26,
       ),
+    );
+  }
+
+  Widget _buildBottomNav() {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 15),
+      color: const Color(0xFFB08968), // Brownish bottom nav
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          _navItem(Icons.history, "History"),
+          _navItem(Icons.bookmark_border, "Saved"),
+          _navItem(Icons.crop_free, "Scanner", isBig: true),
+          _navItem(Icons.person_outline, "Profile"),
+          _navItem(Icons.settings_outlined, "Settings"),
+        ],
+      ),
+    );
+  }
+
+  Widget _navItem(IconData icon, String label, {bool isBig = false}) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, color: Colors.white, size: isBig ? 40 : 28),
+        Text(label, style: const TextStyle(color: Colors.white, fontSize: 10)),
+      ],
     );
   }
 }
