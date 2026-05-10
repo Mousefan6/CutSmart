@@ -1,8 +1,8 @@
-import 'package:cutsmart/App/Scenes/profile_page.dart';
+import 'package:cutsmart/App/Scenes/login_page.dart';
 import 'package:flutter/material.dart';
 import '../Scenes/video_page.dart';
 import '../Scenes/camera_page.dart';
-import '../Scenes/profile_page.dart';
+import '../Scenes/login_page.dart';
 import '../Scenes/settings_page.dart';
 import '../Scenes/saved_page.dart';
 
@@ -27,7 +27,7 @@ class BottomMenuBar extends StatelessWidget {
             context,
             icon: Icons.person, // Changed to person for profile
             label: "profile",
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfilePage())),
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginPage())),
           ),
 
           // --- THE LARGE SCANNER BUTTON ---
