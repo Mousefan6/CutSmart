@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../UI/menu_buttons.dart';
-import '../UI/app_theme.dart'; // Import your new theme file
+import '../UI/app_theme.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -16,56 +16,72 @@ class SettingsPage extends StatelessWidget {
             centerTitle: true,
             backgroundColor: bgColor,
             elevation: 0,
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back, color: AppTheme.accentColor.value),
-              onPressed: () => Navigator.pop(context),
-            ),
             title: Text(
-              'CutSmart',
-              style: TextStyle(
-                fontFamily: 'Georgia',
-                fontSize: 24,
-                fontStyle: FontStyle.italic,
-                fontWeight: FontWeight.w700,
-                color: AppTheme.accentColor.value,
-              ),
+              'Settings',
+              style: TextStyle(color: AppTheme.accentColor.value, fontWeight: FontWeight.bold),
             ),
           ),
           body: Column(
             children: [
-              Expanded(
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'User Settings',
-                        style: TextStyle(
-                          color: AppTheme.accentColor.value,
-                          fontSize: 20,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      // NEW THEME TOGGLE BUTTON
-                      ElevatedButton.icon(
-                        onPressed: () => AppTheme.toggleTheme(),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppTheme.accentColor.value,
-                          foregroundColor: bgColor,
-                        ),
-                        icon: const Icon(Icons.palette_outlined),
-                        label: const Text("CHANGE THEME"),
-                      ),
-                    ],
-                  ),
+              const SizedBox(height: 40),
+              Text(
+                "Choose Color Palette",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: AppTheme.accentColor.value,
                 ),
               ),
+              const SizedBox(height: 20),
+
+              // THE PALETTE SELECTOR ROW
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _paletteCircle(ColorScene.classic, const Color(0xFF7D5334), "Classic"),
+                  _paletteCircle(ColorScene.protanopia, const Color(0xFF005AB5), "Protan"),
+                  _paletteCircle(ColorScene.deuteranopia, const Color(0xFFDAA520), "Deuter"),
+                ],
+              ),
+
+              const Spacer(),
               const BottomMenuBar(),
             ],
           ),
         );
       },
+    );
+  }
+
+  Widget _paletteCircle(ColorScene scene, Color previewColor, String label) {
+    return GestureDetector(
+      onTap: () => AppTheme.setTheme(scene),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        child: Column(
+          children: [
+            Container(
+              width: 60,
+              height: 60,
+              decoration: BoxDecoration(
+                color: previewColor,
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: AppTheme.currentScene == scene
+                      ? Colors.black
+                      : Colors.transparent,
+                  width: 3,
+                ),
+                boxShadow: [
+                  BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2))
+                ],
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(label, style: TextStyle(color: AppTheme.accentColor.value, fontSize: 12)),
+          ],
+        ),
+      ),
     );
   }
 }
