@@ -41,6 +41,8 @@ class SettingsPage extends StatelessWidget {
                   _paletteCircle(ColorScene.classic, const Color(0xFF7D5334), "Classic"),
                   _paletteCircle(ColorScene.protanopia, const Color(0xFF005AB5), "Protan"),
                   _paletteCircle(ColorScene.deuteranopia, const Color(0xFFDAA520), "Deuter"),
+                  _paletteCircle(ColorScene.night, const Color(0xFF424242), "Night"),
+
                 ],
               ),
 

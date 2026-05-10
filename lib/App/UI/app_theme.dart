@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-enum ColorScene { classic, protanopia, deuteranopia }
+enum ColorScene { classic, protanopia, deuteranopia, night }
 
 class AppTheme {
   // Notifiers for the UI to listen to
@@ -19,16 +19,20 @@ class AppTheme {
         cardColor.value = Colors.white;
         break;
       case ColorScene.deuteranopia:
-        backgroundColor.value = const Color(0xFFF0F0F0);
+        backgroundColor.value = const Color(0xFFFFE0B2);
         accentColor.value = const Color(0xFFDAA520); // Goldenrod for visibility
         cardColor.value = Colors.white;
         break;
       case ColorScene.classic:
-      default:
         backgroundColor.value = const Color(0xFFE3D8CD);
         accentColor.value = const Color(0xFF7D5334);
         cardColor.value = Colors.white;
         break;
+      case ColorScene.night:
+        backgroundColor.value = const Color(0xFF263238);
+        accentColor.value = const Color(0xFFD6D6D6);
+        cardColor.value = const Color(0xFF424242);
+      break;
     }
   }
 }

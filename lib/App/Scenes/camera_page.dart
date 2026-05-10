@@ -28,7 +28,7 @@ class _CameraPageState extends State<CameraPage> {
     // Use an empty string fallback to prevent crash if .env isn't loaded yet
     final String apiKey = dotenv.env['GEMINI_API_KEY'] ?? '';
     _model = GenerativeModel(
-      model: 'gemini-1.5-flash', // Updated to flash for faster mobile performance
+      model: 'gemini-2.5-flash', // Updated to flash for faster mobile performance
       apiKey: apiKey,
     );
   }
