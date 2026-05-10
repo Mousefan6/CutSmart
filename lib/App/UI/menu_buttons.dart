@@ -3,9 +3,7 @@ import 'package:cutsmart/App/Scenes/login_page.dart';
 import 'package:cutsmart/App/Scenes/profile_page.dart';
 import 'package:flutter/material.dart';
 import '../Scenes/camera_page.dart';
-import '../Scenes/register_page.dart';
 import '../Scenes/settings_page.dart';
-import '../Scenes/video_page.dart';
 import '../UI/app_theme.dart';
 import '../Utils/session_manager.dart'; // Ensure this points to your theme file
 
@@ -68,12 +66,12 @@ class BottomMenuBar extends StatelessWidget {
                 icon: Icons.history,
                 isLarge: true,
                 label: "History",
-                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfilePage())),
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const HistoryPage())),
               ),
 
               _menuButton(
                 context,
-                icon: Icons.settings_outlined, // Fixed icon
+                icon: Icons.settings_outlined,
                 label: "Settings",
                 onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const SettingsPage())),
               ),
