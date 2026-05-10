@@ -1,5 +1,6 @@
 import 'package:cutsmart/App/Scenes/history_page.dart';
 import 'package:cutsmart/App/Scenes/login_page.dart';
+import 'package:cutsmart/App/Scenes/profile_page.dart';
 import 'package:flutter/material.dart';
 import '../Scenes/camera_page.dart';
 import '../Scenes/register_page.dart';
@@ -45,7 +46,7 @@ class BottomMenuBar extends StatelessWidget {
                 icon: Icons.history,
                 isLarge: true,
                 label: "History",
-                onTap: () => (),
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfilePage())),
               ),
 
               _menuButton(
@@ -54,8 +55,6 @@ class BottomMenuBar extends StatelessWidget {
                 label: "Settings",
                 onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const SettingsPage())),
               ),
-
-
             ],
           ),
         );

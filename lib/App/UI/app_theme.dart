@@ -5,7 +5,7 @@ enum ColorScene { classic, protanopia, deuteranopia, night }
 class AppTheme {
   // Notifiers for the UI to listen to
   static ValueNotifier<Color> backgroundColor = ValueNotifier(const Color(0xFFE3D8CD));
-  static ValueNotifier<Color> accentColor = ValueNotifier(const Color(0xFF7D5334));
+  static ValueNotifier<Color> accentColor = ValueNotifier(const Color(0xFFB08968));
   static ValueNotifier<Color> cardColor = ValueNotifier(Colors.white);
 
   static ColorScene currentScene = ColorScene.classic;
@@ -25,7 +25,7 @@ class AppTheme {
         break;
       case ColorScene.classic:
         backgroundColor.value = const Color(0xFFE3D8CD);
-        accentColor.value = const Color(0xFF7D5334);
+        accentColor.value = const Color(0xFFB08968);
         cardColor.value = Colors.white;
         break;
       case ColorScene.night:
