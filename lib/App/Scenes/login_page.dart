@@ -62,7 +62,6 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Listen to theme changes
     return ValueListenableBuilder(
       valueListenable: AppTheme.backgroundColor,
       builder: (context, Color bgColor, child) {
@@ -73,10 +72,6 @@ class _LoginPageState extends State<LoginPage> {
             automaticallyImplyLeading: false,
             backgroundColor: Colors.transparent,
             elevation: 0,
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back, color: AppTheme.accentColor.value),
-              onPressed: () => Navigator.pop(context),
-            ),
             title: Text(
               'CutSmart',
               style: TextStyle(
