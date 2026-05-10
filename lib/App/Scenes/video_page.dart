@@ -14,7 +14,7 @@ class VideoDetailPage extends StatefulWidget {
 class _VideoDetailPageState extends State<VideoDetailPage> {
   YoutubePlayerController? _controller;
   bool _isLoading = true;
-  String? _foundVideoId;
+  bool _hasError = false;
 
   @override
   void initState() {
@@ -25,20 +25,24 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
   Future<void> _findVideo() async {
     final yt = YoutubeExplode();
     try {
-      // Searches YouTube for the query and takes the first result
       final videoSearch = await yt.search.search(widget.searchQuery);
-      if (videoSearch.isNotEmpty) {
+
+      if (videoSearch.isNotEmpty && mounted) {
         setState(() {
-          _foundVideoId = videoSearch.first.id.value;
           _controller = YoutubePlayerController(
-            initialVideoId: _foundVideoId!,
-            flags: const YoutubePlayerFlags(autoPlay: true, mute: false),
+            initialVideoId: videoSearch.first.id.value,
+            flags: const YoutubePlayerFlags(
+              autoPlay: true,
+              mute: false,
+            ),
           );
           _isLoading = false;
         });
+      } else {
+        if (mounted) setState(() => _hasError = true);
       }
     } catch (e) {
-      debugPrint("Video search error: $e");
+      if (mounted) setState(() => _hasError = true);
     } finally {
       yt.close();
     }
@@ -52,32 +56,102 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppTheme.backgroundColor.value,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: Text("Tutorial: ${widget.searchQuery}"),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
+    final Color themeAccent = AppTheme.accentColor.value;
+
+    return YoutubePlayerBuilder(
+      player: YoutubePlayer(
+        controller: _controller ?? YoutubePlayerController(initialVideoId: ""),
+        showVideoProgressIndicator: true,
+        progressIndicatorColor: themeAccent,
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : Center(
-        child: Padding(
-          padding: const EdgeInsets.all(15.0),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(20),
-            child: YoutubePlayer(
-              controller: _controller!,
-              showVideoProgressIndicator: true,
-              progressIndicatorColor: Colors.redAccent,
+      builder: (context, player) {
+        return Scaffold(
+          backgroundColor: AppTheme.backgroundColor.value,
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back_ios_new, color: themeAccent),
+              onPressed: () => Navigator.pop(context),
+            ),
+            title: Text(
+              "Tutorial",
+              style: TextStyle(
+                  fontFamily: 'Georgia',
+                  color: themeAccent,
+                  fontStyle: FontStyle.italic,
+                  fontWeight: FontWeight.bold
+              ),
             ),
           ),
-        ),
-      ),
+          body: _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : _hasError
+              ? Center(child: Text("Video unavailable", style: TextStyle(color: themeAccent)))
+              : ListView( // Using ListView to handle all orientations/sizes safely
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            children: [
+              const SizedBox(height: 20),
+
+              // CLEAR FOOD NAME
+              Text(
+                _formatTitle(widget.searchQuery),
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: themeAccent,
+                  fontWeight: FontWeight.w900,
+                  fontSize: 22,
+                  letterSpacing: 1.5,
+                  fontFamily: 'Georgia',
+                ),
+              ),
+
+              const SizedBox(height: 10),
+
+              Text(
+                "CUTTING TECHNIQUE",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: themeAccent.withOpacity(0.6),
+                  fontSize: 12,
+                  letterSpacing: 2,
+                ),
+              ),
+
+              const SizedBox(height: 30),
+
+              // THE PLAYER
+              ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(color: themeAccent.withOpacity(0.1)),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: player,
+                ),
+              ),
+
+              const SizedBox(height: 40),
+            ],
+          ),
+        );
+      },
     );
+  }
+
+  // Helper to make the title look good
+  String _formatTitle(String query) {
+    return query
+        .toLowerCase()
+    // Aggressively remove all common filler words
+        .replaceAll('how to cut', '')
+        .replaceAll('tutorial', '')
+        .replaceAll('youtube', '')
+        .replaceAll('video', '')
+        .replaceAll('an ', ' ') // Removes "an " if it's "an onion"
+        .replaceAll('a ', ' ')  // Removes "a " if it's "a potato"
+        .trim()
+        .toUpperCase();
   }
 }
