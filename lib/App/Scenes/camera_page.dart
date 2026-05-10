@@ -3,6 +3,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:gal/gal.dart';
 import 'dart:typed_data';
 
 import '../UI/Menu_buttons.dart';
@@ -61,17 +62,20 @@ class _CameraPageState extends State<CameraPage> {
     setState(() => _isScanning = true);
 
     try {
+      // Capture the photo
       final XFile photo = await _controller!.takePicture();
+      // SAVE TO GALLERY
+      await Gal.putImage(photo.path);
+      // Process for Gemini
       final Uint8List imageBytes = await photo.readAsBytes();
-
-      final prompt = TextPart("Identify this food. Return only the name."); // PROMPT FOR GEMINI
-      final imagePart = DataPart('image/jpeg', imageBytes);
-
+      // Wait for gemini response
       final response = await _model.generateContent([
-        Content.multi([prompt, imagePart])
+        Content.multi([TextPart("Identify this food."), DataPart('image/jpeg', imageBytes)])
       ]);
 
       _showResult(response.text ?? "Not found", imageBytes);
+    } catch (e) {
+      debugPrint("Error saving or scanning: $e");
     } finally {
       setState(() => _isScanning = false);
     }
