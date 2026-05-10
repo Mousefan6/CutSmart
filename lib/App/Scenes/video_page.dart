@@ -35,6 +35,7 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
         return Scaffold(
           backgroundColor: bgColor,
           appBar: AppBar(
+            automaticallyImplyLeading: false,
             backgroundColor: Colors.transparent,
             elevation: 0,
             centerTitle: true,
@@ -42,6 +43,7 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
               icon: Icon(Icons.arrow_back, color: AppTheme.accentColor.value),
               onPressed: () => Navigator.pop(context),
             ),
+
             title: Text(
               'CutSmart',
               style: TextStyle(
