@@ -5,53 +5,56 @@ import 'dart:convert';
 import '../UI/menu_buttons.dart';
 import '../UI/app_theme.dart';
 
-class ProfilePage extends StatefulWidget {
-  const ProfilePage({super.key});
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
 
   @override
-  State<ProfilePage> createState() => _ProfilePageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
-  // Logic variables
-  String message = "Connecting to server...";
-  final TextEditingController _userController = TextEditingController();
-  final TextEditingController _passController = TextEditingController();
+class _RegisterPageState extends State<RegisterPage> {
+  String message = "Create Account";
+  bool sendNotifications = false;
 
-  @override
-  void initState() {
-    super.initState();
-    fetchPing();
-  }
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
 
-  @override
-  void dispose() {
-    _userController.dispose();
-    _passController.dispose();
-    super.dispose();
-  }
+  Future<void> register() async {
+    String username = _usernameController.text;
+    String email = _emailController.text;
+    String password = _passwordController.text;
+    String confirmPw = _confirmPasswordController.text;
 
-  // Backend connection check
-  Future<void> fetchPing() async {
+    if (password != confirmPw) {
+      setState(() => message = "Passwords do not match!");
+      return;
+    }
+    if (username.isEmpty || email.isEmpty || password.isEmpty) {
+      setState(() => message = "Please fill in all fields");
+      return;
+    }
+    final url = Uri.parse('http://10.0.2.2:5000/auth/register');
     try {
-      final response = await http.get(
-        Uri.parse('http://10.0.2.2:5000/auth'),
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'username': username,
+          'email': email,
+          'password': password,
+        }),
       );
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        setState(() {
-          message = data['message']; // pong
-        });
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = jsonDecode(response.body);
+        print('Success: $data');
       } else {
-        setState(() {
-          message = "Server Error: ${response.statusCode}";
-        });
+        print('Failed with status: ${response.statusCode}');
+        print('Response body: ${response.body}');
       }
     } catch (e) {
-      setState(() {
-        message = "Backend Offline";
-      });
+      print('Connection Error: $e');
     }
   }
 
@@ -99,7 +102,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                         child: Text(
                           "Status: $message",
-                          style: TextStyle(
+                           style: TextStyle(
                             fontSize: 12,
                             color: AppTheme.accentColor.value.withOpacity(0.7),
                           ),
@@ -117,12 +120,22 @@ class _ProfilePageState extends State<ProfilePage> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
+
                       const SizedBox(height: 30),
 
                       // Username Field
                       _buildTextField(
-                        controller: _userController,
+                        controller: _usernameController,
                         hint: "Username",
+                        icon: Icons.person_outline,
+                      ),
+
+                      const SizedBox(height: 15),
+
+                      // Email Field
+                      _buildTextField(
+                        controller: _emailController,
+                        hint: "Email",
                         icon: Icons.person_outline,
                       ),
 
@@ -130,13 +143,23 @@ class _ProfilePageState extends State<ProfilePage> {
 
                       // Password Field
                       _buildTextField(
-                        controller: _passController,
+                        controller: _passwordController,
                         hint: "Password",
                         icon: Icons.lock_outline,
                         isPassword: true,
                       ),
 
-                      const SizedBox(height: 30),
+                      const SizedBox(height: 15),
+
+                      // CONFIRM Password Field
+                      _buildTextField(
+                        controller: _confirmPasswordController,
+                        hint: "Confirm Password",
+                        icon: Icons.lock_outline,
+                        isPassword: true,
+                      ),
+
+                      const SizedBox(height: 20),
 
                       // Register Button
                       SizedBox(
@@ -144,7 +167,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         height: 55,
                         child: ElevatedButton(
                           onPressed: () {
-                            debugPrint("Registering: ${_userController.text}");
+                            debugPrint("Registering: ${_usernameController.text}");
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppTheme.accentColor.value,
@@ -160,6 +183,31 @@ class _ProfilePageState extends State<ProfilePage> {
                               fontSize: 16,
                               letterSpacing: 1.2,
                             ),
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 20), // For spacing
+
+                      GestureDetector(
+                        onTap: () => Navigator.pop(context),
+                        child: RichText(
+                          text: const TextSpan(
+                            style: TextStyle(fontSize: 16, fontFamily: 'Georgia'),
+                            children: [
+                              TextSpan(
+                                text: "Already have an account? ",
+                                style: TextStyle(color: Color(0xFF7D5334)),
+                              ),
+                              TextSpan(
+                                text: "Login",
+                                style: TextStyle(
+                                  color: Colors.blue,
+                                  decoration: TextDecoration.underline,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
