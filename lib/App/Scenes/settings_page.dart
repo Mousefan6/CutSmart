@@ -16,6 +16,7 @@ class SettingsPage extends StatelessWidget {
             centerTitle: true,
             backgroundColor: bgColor,
             elevation: 0,
+            automaticallyImplyLeading: false,
             title: Text(
               'Settings',
               style: TextStyle(color: AppTheme.accentColor.value, fontWeight: FontWeight.bold),

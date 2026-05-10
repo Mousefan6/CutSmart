@@ -14,6 +14,7 @@ class SavedPage extends StatelessWidget {
           backgroundColor: bgColor,
           appBar: AppBar(
             centerTitle: true,
+            automaticallyImplyLeading: false,
             backgroundColor: bgColor,
             elevation: 0,
             leading: IconButton(

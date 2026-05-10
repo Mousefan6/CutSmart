@@ -51,12 +51,9 @@ class _LoginPageState extends State<LoginPage> {
           backgroundColor: bgColor,
           appBar: AppBar(
             centerTitle: true,
+            automaticallyImplyLeading: false,
             backgroundColor: Colors.transparent,
             elevation: 0,
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back, color: AppTheme.accentColor.value),
-              onPressed: () => Navigator.pop(context),
-            ),
             title: Text(
               'CutSmart',
               style: TextStyle(

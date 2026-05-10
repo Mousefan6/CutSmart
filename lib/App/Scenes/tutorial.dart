@@ -14,6 +14,7 @@ class SnapPage extends StatelessWidget {
         return Scaffold(
           backgroundColor: bgColor,
           appBar: AppBar(
+            automaticallyImplyLeading: false,
             backgroundColor: Colors.transparent,
             elevation: 0,
             leading: IconButton(

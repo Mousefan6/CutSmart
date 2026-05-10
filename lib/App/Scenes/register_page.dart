@@ -67,13 +67,10 @@ class _RegisterPageState extends State<RegisterPage> {
         return Scaffold(
           backgroundColor: bgColor,
           appBar: AppBar(
+            automaticallyImplyLeading: false,
             centerTitle: true,
             backgroundColor: Colors.transparent,
             elevation: 0,
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back, color: AppTheme.accentColor.value),
-              onPressed: () => Navigator.pop(context),
-            ),
             title: Text(
               'CutSmart',
               style: TextStyle(
