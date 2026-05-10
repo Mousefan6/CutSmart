@@ -1,20 +1,57 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
 import '../UI/menu_buttons.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
+
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  String message = "Loading...";
+
+  @override
+  void initState() {
+    super.initState();
+    fetchPing();
+  }
+
+  Future<void> fetchPing() async {
+    try {
+      final response = await http.get(
+        Uri.parse('http://10.0.2.2:5000/auth'),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        setState(() {
+          message = data['message']; // pong
+        });
+      } else {
+        setState(() {
+          message = "Error: ${response.statusCode}";
+        });
+      }
+    } catch (e) {
+      setState(() {
+        message = "Connection failed";
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // The tan background color
       backgroundColor: const Color(0xFFE3D8CD),
 
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: const Color(0xFFE3D8CD),
         elevation: 0,
-        // Manual back arrow themed to match your text color
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Color(0xFF7D5334)),
           onPressed: () => Navigator.pop(context),
@@ -36,12 +73,11 @@ class ProfilePage extends StatelessWidget {
 
       body: Column(
         children: [
-          // Content of the profile page goes here
-          const Expanded(
+          Expanded(
             child: Center(
               child: Text(
-                'User Profile',
-                style: TextStyle(
+                message,
+                style: const TextStyle(
                   color: Color(0xFF7D5334),
                   fontSize: 20,
                   fontWeight: FontWeight.w500,
@@ -50,7 +86,6 @@ class ProfilePage extends StatelessWidget {
             ),
           ),
 
-          // Your custom menu bar at the bottom
           const BottomMenuBar(),
         ],
       ),
