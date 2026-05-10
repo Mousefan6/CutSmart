@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
 import '../UI/menu_buttons.dart';
 import '../UI/app_theme.dart'; // Ensure this points to your theme file
 
@@ -10,6 +13,35 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  String message = "Loading...";
+
+  @override
+  void initState() {
+    super.initState();
+    fetchPing();
+  }
+
+  Future<void> fetchPing() async {
+    try {
+      final response = await http.get(
+        Uri.parse('http://10.0.2.2:5000/auth'),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        setState(() {
+          message = data['message']; // pong
+        });
+      } else {
+        setState(() {
+          message = "Error: ${response.statusCode}";
+        });
+      }
+    } catch (e) {
+      setState(() {
+        message = "Connection failed";
+      });
+    }
   // Controllers to grab the text from the fields
   final TextEditingController _userController = TextEditingController();
   final TextEditingController _passController = TextEditingController();
@@ -23,6 +55,27 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFE3D8CD),
+
+      appBar: AppBar(
+        centerTitle: true,
+        backgroundColor: const Color(0xFFE3D8CD),
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Color(0xFF7D5334)),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: GestureDetector(
+          onTap: () => Navigator.pop(context),
+          child: const Text(
+            'CutSmart',
+            style: TextStyle(
+              fontFamily: 'Georgia',
+              fontSize: 24,
+              fontStyle: FontStyle.italic,
+              fontWeight: FontWeight.w700,
+              color: Color(0xFF7D5334),
     return ValueListenableBuilder(
       valueListenable: AppTheme.backgroundColor,
       builder: (context, Color bgColor, child) {
@@ -126,6 +179,8 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
+          const BottomMenuBar(),
+        ],
   // Helper method to keep the UI code clean and themed
   Widget _buildTextField({
     required TextEditingController controller,
