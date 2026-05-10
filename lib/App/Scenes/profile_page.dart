@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import '../UI/menu_buttons.dart';
-import '../UI/app_theme.dart'; // Ensure this points to your theme file
+import '../UI/app_theme.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -13,7 +13,10 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  String message = "Loading...";
+  // Logic variables
+  String message = "Connecting to server...";
+  final TextEditingController _userController = TextEditingController();
+  final TextEditingController _passController = TextEditingController();
 
   @override
   void initState() {
@@ -21,6 +24,14 @@ class _ProfilePageState extends State<ProfilePage> {
     fetchPing();
   }
 
+  @override
+  void dispose() {
+    _userController.dispose();
+    _passController.dispose();
+    super.dispose();
+  }
+
+  // Backend connection check
   Future<void> fetchPing() async {
     try {
       final response = await http.get(
@@ -34,48 +45,19 @@ class _ProfilePageState extends State<ProfilePage> {
         });
       } else {
         setState(() {
-          message = "Error: ${response.statusCode}";
+          message = "Server Error: ${response.statusCode}";
         });
       }
     } catch (e) {
       setState(() {
-        message = "Connection failed";
+        message = "Backend Offline";
       });
     }
-  // Controllers to grab the text from the fields
-  final TextEditingController _userController = TextEditingController();
-  final TextEditingController _passController = TextEditingController();
-
-  @override
-  void dispose() {
-    _userController.dispose();
-    _passController.dispose();
-    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFE3D8CD),
-
-      appBar: AppBar(
-        centerTitle: true,
-        backgroundColor: const Color(0xFFE3D8CD),
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF7D5334)),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: GestureDetector(
-          onTap: () => Navigator.pop(context),
-          child: const Text(
-            'CutSmart',
-            style: TextStyle(
-              fontFamily: 'Georgia',
-              fontSize: 24,
-              fontStyle: FontStyle.italic,
-              fontWeight: FontWeight.w700,
-              color: Color(0xFF7D5334),
+    // Listen to theme changes
     return ValueListenableBuilder(
       valueListenable: AppTheme.backgroundColor,
       builder: (context, Color bgColor, child) {
@@ -83,7 +65,7 @@ class _ProfilePageState extends State<ProfilePage> {
           backgroundColor: bgColor,
           appBar: AppBar(
             centerTitle: true,
-            backgroundColor: bgColor,
+            backgroundColor: Colors.transparent,
             elevation: 0,
             leading: IconButton(
               icon: Icon(Icons.arrow_back, color: AppTheme.accentColor.value),
@@ -107,11 +89,26 @@ class _ProfilePageState extends State<ProfilePage> {
                   padding: const EdgeInsets.symmetric(horizontal: 30),
                   child: Column(
                     children: [
-                      const SizedBox(height: 40),
-                      Icon(Icons.person_add_alt_1,
-                          size: 80,
-                          color: AppTheme.accentColor.value),
                       const SizedBox(height: 20),
+                      // Server status badge
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: AppTheme.accentColor.value.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          "Status: $message",
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: AppTheme.accentColor.value.withOpacity(0.7),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      Icon(Icons.person_add_alt_1,
+                          size: 80, color: AppTheme.accentColor.value),
+                      const SizedBox(height: 10),
                       Text(
                         'Create Account',
                         style: TextStyle(
@@ -147,8 +144,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         height: 55,
                         child: ElevatedButton(
                           onPressed: () {
-                            print("Registering: ${_userController.text}");
-                            // Add registration logic here
+                            debugPrint("Registering: ${_userController.text}");
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppTheme.accentColor.value,
@@ -179,9 +175,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-          const BottomMenuBar(),
-        ],
-  // Helper method to keep the UI code clean and themed
+  // Themed helper method
   Widget _buildTextField({
     required TextEditingController controller,
     required String hint,
@@ -197,7 +191,8 @@ class _ProfilePageState extends State<ProfilePage> {
         hintStyle: TextStyle(color: AppTheme.accentColor.value.withOpacity(0.5)),
         prefixIcon: Icon(icon, color: AppTheme.accentColor.value),
         filled: true,
-        fillColor: AppTheme.backgroundColor.value, // Uses the card color from theme
+        // We use the theme's cardColor for contrast against the background
+        fillColor: AppTheme.cardColor.value,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(15),
           borderSide: BorderSide.none,
