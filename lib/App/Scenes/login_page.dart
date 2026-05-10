@@ -35,7 +35,6 @@ class _LoginPageState extends State<LoginPage> {
         final token = data["session_token"];
         await SessionManager.instance.saveToken(token);
       }
-
     } catch (e) {
       setState(() => message = "Connection Error");
     }

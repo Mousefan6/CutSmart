@@ -1,5 +1,8 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
 import '../UI/app_theme.dart';
 import './video_page.dart'; // Ensure this path is correct
 
@@ -12,6 +15,38 @@ class FoodDetailPage extends StatelessWidget {
     required this.foodData,
     required this.imageBytes,
   });
+
+  Future<void> _autoSaveToHistory() async {
+    final token = await SessionManager.instance.getToken();
+
+    if (token == null) {
+      debugPrint("Auth Error: No token found in secure storage.");
+      return;
+    }
+    final url = Uri.parse('http://10.0.2.2:5000/history/save');
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token', // Passing the secure token
+        },
+        body: jsonEncode({
+          'food_name': foodData['name'] ?? "Unknown Food",
+          'nutrition': foodData['nutritional_facts_per_100g'] ?? {},
+        }),
+      );
+
+      if (response.statusCode == 201) {
+        debugPrint("Successfully auto-saved to database.");
+      } else {
+        debugPrint("Server rejected save: ${response.body}");
+      }
+    } catch (e) {
+      debugPrint("Network Error during auto-save: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

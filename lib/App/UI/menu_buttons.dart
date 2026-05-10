@@ -1,3 +1,4 @@
+import 'package:cutsmart/App/Scenes/history_page.dart';
 import 'package:cutsmart/App/Scenes/login_page.dart';
 import 'package:flutter/material.dart';
 import '../Scenes/camera_page.dart';
