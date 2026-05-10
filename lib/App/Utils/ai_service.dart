@@ -4,7 +4,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class AIService {
   static final GenerativeModel _model = GenerativeModel(
-    model: 'gemini-1.5-flash',
+    model: 'gemini-2.5',
     apiKey: dotenv.env['GEMINI_API_KEY'] ?? '',
   );
 

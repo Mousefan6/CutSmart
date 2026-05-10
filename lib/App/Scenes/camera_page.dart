@@ -27,7 +27,7 @@ class _CameraPageState extends State<CameraPage> {
     super.initState();
     final String apiKey = dotenv.env['GEMINI_API_KEY'] ?? '';
     _model = GenerativeModel(
-      model: 'gemini-1.5-flash',
+      model: 'gemini-2.5',
       apiKey: apiKey,
     );
   }
