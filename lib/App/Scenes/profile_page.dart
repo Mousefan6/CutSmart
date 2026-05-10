@@ -1,20 +1,83 @@
 import 'package:flutter/material.dart';
 import '../UI/app_theme.dart';
-import '../UI/menu_buttons.dart'; // Ensure this matches your file name
+import '../UI/menu_buttons.dart';
 import '../Utils/session_manager.dart';
 import 'login_page.dart';
 
-class ProfilePage extends StatelessWidget {
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
   @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+
+  Map<String, dynamic>? profile;
+  bool loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    loadProfile();
+  }
+
+  Future<void> loadProfile() async {
+    try {
+      final token = await SessionManager.instance.getToken();
+
+      final response = await http.get(
+        Uri.parse("http://10.0.2.2:5000/profile"),
+        headers: {
+          "Authorization": "Bearer $token",
+        },
+      ).timeout(const Duration(seconds: 5));
+
+      if (response.statusCode == 200) {
+        setState(() {
+          profile = jsonDecode(response.body);
+          loading = false;
+        });
+      } else {
+        setState(() {
+          loading = false;
+          profile = {
+            "username": "Error",
+            "email": "Backend failed"
+          };
+        });
+      }
+
+    } catch (e) {
+      setState(() {
+        loading = false;
+        profile = {
+          "username": "Offline",
+          "email": "Cannot reach server"
+        };
+      });
+
+      debugPrint("Profile load failed: $e");
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // We listen to the accentColor; background/card colors update automatically
     return ValueListenableBuilder(
       valueListenable: AppTheme.accentColor,
       builder: (context, Color accentColor, child) {
+
+        if (loading) {
+          return Scaffold(
+            backgroundColor: AppTheme.backgroundColor.value,
+            body: const Center(child: CircularProgressIndicator()),
+          );
+        }
+
         return Scaffold(
-          // Set the background color from your theme
           backgroundColor: AppTheme.backgroundColor.value,
 
           appBar: AppBar(
@@ -27,42 +90,55 @@ class ProfilePage extends StatelessWidget {
               style: TextStyle(
                 color: accentColor,
                 fontWeight: FontWeight.bold,
-                letterSpacing: 1.2,
               ),
             ),
           ),
 
           body: Column(
             children: [
-              // Expanded area ensures the content stays above the BottomBar
+
               Expanded(
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.symmetric(horizontal: 25),
                   child: Column(
                     children: [
+
                       const SizedBox(height: 30),
 
-                      // --- PROFILE PICTURE ---
                       Center(
                         child: CircleAvatar(
                           radius: 60,
                           backgroundColor: accentColor.withOpacity(0.1),
-                          child: Icon(Icons.person, size: 70, color: accentColor),
+                          child: Icon(
+                            Icons.person,
+                            size: 70,
+                            color: accentColor,
+                          ),
                         ),
                       ),
 
                       const SizedBox(height: 40),
 
-                      // --- INFO BOXES ---
-                      _infoBox("Username", "Jaden", accentColor),
-                      _infoBox("Email", "jaden@example.com", accentColor),
-                      _infoBox("App Version", "1.0.0 (Beta)", accentColor),
+                      _infoBox(
+                        "Username",
+                        profile?["username"] ?? "Unknown",
+                        accentColor,
+                      ),
+
+                      _infoBox(
+                        "Email",
+                        profile?["email"] ?? "Unknown",
+                        accentColor,
+                      ),
+
+                      _infoBox(
+                        "App Version",
+                        "1.0.0 (Beta)",
+                        accentColor,
+                      ),
 
                       const SizedBox(height: 40),
 
-                      // --- LOGOUT BUTTON ---
-                      // This stays inside the scroll view or you could Spacer it
-                      // if you want it pinned just above the bottom bar.
                       OutlinedButton(
                         style: OutlinedButton.styleFrom(
                           minimumSize: const Size(double.infinity, 55),
@@ -74,10 +150,11 @@ class ProfilePage extends StatelessWidget {
                         onPressed: () async {
                           await SessionManager.instance.clearToken();
                           if (context.mounted) {
-                            // Clear navigation stack so user can't "Go Back" to profile
                             Navigator.pushAndRemoveUntil(
                               context,
-                              MaterialPageRoute(builder: (context) => const LoginPage()),
+                              MaterialPageRoute(
+                                builder: (context) => const LoginPage(),
+                              ),
                                   (route) => false,
                             );
                           }
@@ -90,14 +167,13 @@ class ProfilePage extends StatelessWidget {
                           ),
                         ),
                       ),
+
                       const SizedBox(height: 20),
                     ],
                   ),
                 ),
               ),
 
-              // --- THE BOTTOM BAR ---
-              // Placed outside Expanded to stay at the very bottom
               const BottomMenuBar(),
             ],
           ),
@@ -106,7 +182,6 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  // Helper widget for information rows
   Widget _infoBox(String label, String value, Color accentColor) {
     return Container(
       margin: const EdgeInsets.only(bottom: 15),

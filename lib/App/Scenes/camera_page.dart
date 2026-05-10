@@ -6,7 +6,9 @@ import 'dart:typed_data';
 import '../UI/menu_buttons.dart';
 import '../Utils/ai_service.dart';
 import '../UI/app_theme.dart';
+import '../Utils/history_service.dart';
 import './food_detail_page.dart';
+
 
 class CameraPage extends StatefulWidget {
   const CameraPage({super.key});
@@ -88,28 +90,44 @@ class _CameraPageState extends State<CameraPage> {
 
   Future<void> _processImage(Uint8List imageBytes) async {
     setState(() => _isScanning = true);
+
     try {
-      final Map<String, dynamic> result = await AIService.identifyFood(imageBytes);
-      final String foodName = result['name'] ?? "Unknown";
+      final Map<String, dynamic> result =
+      await AIService.identifyFood(imageBytes);
+
+      final String foodName =
+          result['name'] ?? "Unknown";
 
       if (!mounted) return;
 
-      // 1. Ask for confirmation
-      bool confirmed = await _showConfirmationDialog(foodName);
+      await HistoryService.saveScan({
+        "name": foodName,
+        "nutritional_facts_per_100g":
+        result["nutritional_facts_per_100g"],
+        "cutting_safety_tips":
+        result["cutting_safety_tips"],
+        "isSaved": false,
+        "timestamp": DateTime.now().toIso8601String(),
+      });
 
-      // 2. If yes, go to the Detail Scene
+      // 1. Ask for confirmation
+      bool confirmed =
+      await _showConfirmationDialog(foodName);
+
+      // 2. If yes → show UI
       if (confirmed && mounted) {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => FoodDetailPage(
-              foodData: result,
-              imageBytes: imageBytes,
-            ),
+            builder: (context) =>
+                FoodDetailPage(
+                  foodData: result,
+                  imageBytes: imageBytes,
+                ),
           ),
         );
       }
-      // If no, we do nothing and the user is back at the camera to rescan
+
     } catch (e) {
       debugPrint("Processing error: $e");
     } finally {
@@ -245,7 +263,7 @@ class _CameraPageState extends State<CameraPage> {
                             children: [
                               Icon(Icons.photo_camera_outlined, color: AppTheme.accentColor.value.withOpacity(0.5), size: 74),
                               const SizedBox(height: 10),
-                              Text('Camera is off', style: TextStyle(color: AppTheme.accentColor.value.withOpacity(0.5), fontSize: 25)),
+                              Text('Camera is off', style: TextStyle(color: AppTheme.accentColor.value.withOpacity(0.5), fontSize: 13)),
                             ],
                           ),
                         ),
@@ -267,7 +285,7 @@ class _CameraPageState extends State<CameraPage> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 child: SizedBox(
                   width: double.infinity,
                   height: 54,
@@ -277,7 +295,8 @@ class _CameraPageState extends State<CameraPage> {
                       backgroundColor: AppTheme.accentColor.value,
                       foregroundColor: bgColor,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                    ), child: _isScanning
+                    ),
+                    child: _isScanning
                         ? SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2, color: bgColor))
                         : Text(_isCameraOn ? 'SCAN PRODUCT' : 'TURN ON CAMERA', style: const TextStyle(fontWeight: FontWeight.bold)),
                   ),
