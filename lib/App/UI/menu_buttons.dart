@@ -6,7 +6,8 @@ import '../Scenes/camera_page.dart';
 import '../Scenes/register_page.dart';
 import '../Scenes/settings_page.dart';
 import '../Scenes/video_page.dart';
-import '../UI/app_theme.dart'; // Ensure this points to your theme file
+import '../UI/app_theme.dart';
+import '../Utils/session_manager.dart'; // Ensure this points to your theme file
 
 class BottomMenuBar extends StatelessWidget {
   const BottomMenuBar({super.key});
@@ -31,8 +32,29 @@ class BottomMenuBar extends StatelessWidget {
                 context,
                 icon: Icons.person_outline,
                 label: "Profile",
-                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginPage())),
-              ), // TO ADD: BRING USER TO THEIR PROFILE PAGE AND MAKE PROFILE PAGE IF LOGGED IN
+                onTap: () async {
+                  final loggedIn =
+                  await SessionManager.instance.isLoggedIn();
+
+                  if (!context.mounted) return;
+
+                  if (loggedIn) {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ProfilePage(),
+                      ),
+                    );
+                  } else {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const LoginPage(),
+                      ),
+                    );
+                  }
+                },
+              ),
 
               _menuButton(
                 context,

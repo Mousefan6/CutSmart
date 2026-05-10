@@ -1,3 +1,4 @@
+import 'package:cutsmart/App/Scenes/profile_page.dart';
 import 'package:cutsmart/App/Scenes/register_page.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -21,6 +22,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> login() async {
     final url = Uri.parse("http://10.0.2.2:5000/auth/login");
+
     try {
       final response = await http.post(
         url,
@@ -30,12 +32,30 @@ class _LoginPageState extends State<LoginPage> {
           'password': _passwordController.text,
         }),
       );
+
+      print("STATUS: ${response.statusCode}");
+      print("BODY: ${response.body}");
+
       final data = jsonDecode(response.body);
+
       if (response.statusCode == 200 && data["success"] == true) {
         final token = data["session_token"];
         await SessionManager.instance.saveToken(token);
+
+        // NAVIGATE HERE
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => ProfilePage()),
+        );
+
+      } else {
+        setState(() {
+          message = data["message"] ?? "Login failed";
+        });
       }
+
     } catch (e) {
+      print("ERROR: $e");
       setState(() => message = "Connection Error");
     }
   }
@@ -129,7 +149,6 @@ class _LoginPageState extends State<LoginPage> {
                           onPressed: () {
                             debugPrint("Logging in: ${_usernameController.text}");
                             login();
-
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppTheme.accentColor.value,
