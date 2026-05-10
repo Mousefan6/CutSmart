@@ -6,9 +6,6 @@ import '../Scenes/profile_page.dart';
 import '../Scenes/settings_page.dart';
 import '../Scenes/saved_page.dart';
 
-
-
-
 class BottomMenuBar extends StatelessWidget {
   const BottomMenuBar({super.key});
 
