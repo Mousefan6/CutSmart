@@ -35,6 +35,7 @@ class _LoginPageState extends State<LoginPage> {
         final token = data["session_token"];
         await SessionManager.instance.saveToken(token);
       }
+
     } catch (e) {
       setState(() => message = "Connection Error");
     }
@@ -50,9 +51,12 @@ class _LoginPageState extends State<LoginPage> {
           backgroundColor: bgColor,
           appBar: AppBar(
             centerTitle: true,
-            automaticallyImplyLeading: false,
             backgroundColor: Colors.transparent,
             elevation: 0,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back, color: AppTheme.accentColor.value),
+              onPressed: () => Navigator.pop(context),
+            ),
             title: Text(
               'CutSmart',
               style: TextStyle(
@@ -81,7 +85,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         child: Text(
                           "Status: $message",
-                           style: TextStyle(
+                          style: TextStyle(
                             fontSize: 12,
                             color: AppTheme.accentColor.value.withOpacity(0.7),
                           ),

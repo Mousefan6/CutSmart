@@ -245,7 +245,7 @@ class _CameraPageState extends State<CameraPage> {
                             children: [
                               Icon(Icons.photo_camera_outlined, color: AppTheme.accentColor.value.withOpacity(0.5), size: 74),
                               const SizedBox(height: 10),
-                              Text('Camera is off', style: TextStyle(color: AppTheme.accentColor.value.withOpacity(0.5), fontSize: 13)),
+                              Text('Camera is off', style: TextStyle(color: AppTheme.accentColor.value.withOpacity(0.5), fontSize: 25)),
                             ],
                           ),
                         ),
@@ -267,7 +267,7 @@ class _CameraPageState extends State<CameraPage> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                 child: SizedBox(
                   width: double.infinity,
                   height: 54,
@@ -277,8 +277,7 @@ class _CameraPageState extends State<CameraPage> {
                       backgroundColor: AppTheme.accentColor.value,
                       foregroundColor: bgColor,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                    ),
-                    child: _isScanning
+                    ), child: _isScanning
                         ? SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2, color: bgColor))
                         : Text(_isCameraOn ? 'SCAN PRODUCT' : 'TURN ON CAMERA', style: const TextStyle(fontWeight: FontWeight.bold)),
                   ),
