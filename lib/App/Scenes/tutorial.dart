@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'camera_page.dart'; // Ensure this path is correct
 
 class SnapPage extends StatelessWidget {
   const SnapPage({super.key});
@@ -6,7 +7,7 @@ class SnapPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFE8D9C5), // Matches your landing page
+      backgroundColor: const Color(0xFFE8D9C5),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -15,35 +16,87 @@ class SnapPage extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: Center(
-        child: Container(
-          width: 250, // Slightly larger since it's the main focus now
-          height: 200,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(45),
-          ),
-          padding: const EdgeInsets.all(20),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 10.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Expanded(
-                child: Image.asset('assets/mousesnap1.png',
-                  fit: BoxFit.contain,
+              // 1. Snap Section
+              _buildStepCard('assets/mousesnap1.png', 'Snap!'),
+
+              const SizedBox(height: 20),
+
+              // 2. Watch Section
+              _buildStepCard('assets/mousephone.png', 'Watch!'),
+
+              const SizedBox(height: 20),
+
+              // 3. Cut Smart Section
+              _buildStepCard('assets/mousecut.png', 'Cut Smart!'),
+
+              const SizedBox(height: 40),
+
+              // Continue Button
+              SizedBox(
+                width: double.infinity,
+                height: 60,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const CameraPage()),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFB08968),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: const Text(
+                    'Continue',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
                 ),
               ),
-              const SizedBox(height: 12),
-              const Text(
-                '1. Snap!',
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
+              const SizedBox(height: 30), // Bottom breathing room
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  // Reusable helper method to keep the code clean
+  Widget _buildStepCard(String assetPath, String title) {
+    return Container(
+      width: double.infinity,
+      height: 180,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(35),
+      ),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          Expanded(
+            child: Image.asset(
+              assetPath,
+              fit: BoxFit.contain,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
+        ],
       ),
     );
   }
