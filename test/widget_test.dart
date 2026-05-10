@@ -6,7 +6,7 @@ void main() {
   testWidgets('Profile page shows camera scanner button', (
     WidgetTester tester,
   ) async {
-    await tester.pumpWidget(const LandingApp());
+    await tester.pumpWidget(const CutSmartApp());
 
     expect(find.text('Profile'), findsOneWidget);
     expect(find.byIcon(Icons.photo_camera), findsOneWidget);
