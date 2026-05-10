@@ -3,7 +3,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
-import 'package:gal/gal.dart';
+// import 'package:gal/gal.dart';
 import 'dart:typed_data';
 
 import '../UI/menu_buttons.dart';
@@ -65,7 +65,7 @@ class _CameraPageState extends State<CameraPage> {
       // Capture the photo
       final XFile photo = await _controller!.takePicture();
       // SAVE TO GALLERY
-      await Gal.putImage(photo.path);
+      // await Gal.putImage(photo.path);
       // Process for Gemini
       final Uint8List imageBytes = await photo.readAsBytes();
       // Wait for gemini response
