@@ -8,7 +8,6 @@ import '../Scenes/saved_page.dart';
 
 
 
-
 class BottomMenuBar extends StatelessWidget {
   const BottomMenuBar({super.key});
 
@@ -19,83 +18,32 @@ class BottomMenuBar extends StatelessWidget {
       decoration: const BoxDecoration(
         color: Color(0xFFB08968),
       ),
-      padding: const EdgeInsets.fromLTRB(20, 30, 20, 50),
+      padding: const EdgeInsets.fromLTRB(10, 20, 10, 40), // Slightly adjusted padding
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.spaceAround, // Better spacing for mixed sizes
+        crossAxisAlignment: CrossAxisAlignment.end,      // Aligns smaller buttons to the bottom
         children: [
-
-
           _menuButton(
             context,
-            icon: Icons.save,
+            icon: Icons.person, // Changed to person for profile
             label: "profile",
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute<void>(
-                  builder: (context) => const ProfilePage(),
-                ),
-              );
-            },
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfilePage())),
+          ),
+
+          // --- THE LARGE SCANNER BUTTON ---
+          _menuButton(
+            context,
+            icon: Icons.document_scanner_outlined, // More specific scanner icon
+            label: "Scanner",
+            isLarge: true, // Special flag for size
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const CameraPage())),
           ),
 
           _menuButton(
             context,
             icon: Icons.history,
             label: "History",
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const VideoDetailPage(videoIds: ['qLdOxsqeiRA']),
-                ),
-              );
-            },
-          ),
-
-
-
-          _menuButton(
-            context,
-            icon: Icons.settings,
-            label: "Scanner",
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute<void>(
-                  builder: (context) => const CameraPage(),
-                ),
-              );
-            },
-          ),
-
-          _menuButton(
-            context,
-            icon: Icons.settings,
-            label: "Saved",
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute<void>(
-                  builder: (context) => const SavedPage(),
-                ),
-              );
-            },
-          ),
-
-
-          _menuButton(
-            context,
-            icon: Icons.save,
-            label: "settings",
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute<void>(
-                  builder: (context) => const SettingsPage(),
-                ),
-              );
-            },
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const VideoDetailPage(videoIds: ['qLdOxsqeiRA']))),
           ),
         ],
       ),
@@ -107,6 +55,7 @@ class BottomMenuBar extends StatelessWidget {
         required IconData icon,
         required String label,
         required VoidCallback onTap,
+        bool isLarge = false, // Default is false
       }) {
     return GestureDetector(
       onTap: onTap,
@@ -114,20 +63,27 @@ class BottomMenuBar extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            padding: const EdgeInsets.all(14),
+            // If isLarge is true, padding increases from 14 to 22
+            padding: EdgeInsets.all(isLarge ? 22 : 14),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(isLarge ? 20 : 16),
+              boxShadow: isLarge
+                  ? [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 10, offset: const Offset(0, 4))]
+                  : null,
             ),
-            child: Icon(icon),
+            child: Icon(
+              icon,
+              size: isLarge ? 32 : 24, // Icon grows from 24 to 32
+              color: Colors.black,
+            ),
           ),
-
           const SizedBox(height: 8),
-
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               color: Colors.white,
+              fontSize: isLarge ? 14 : 12, // Text gets slightly bigger too
               fontWeight: FontWeight.bold,
             ),
           ),
