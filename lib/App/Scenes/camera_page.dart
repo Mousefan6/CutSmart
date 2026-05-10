@@ -5,7 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'dart:typed_data';
 
-import '../UI/Menu_buttons.dart';
+import '../UI/menu_buttons.dart';
 import '../Utils/ai_service.dart';
 
 class CameraPage extends StatefulWidget {
