@@ -16,9 +16,10 @@ class AIService {
 
   static Future<Map<String, dynamic>> identifyFood(Uint8List imageBytes) async {
     final prompt = TextPart(
-        "Identify the raw food in this image. Return a JSON object with the following keys: "
-            "'name' (one word), 'cutting_safety_tips' (list of strings), and "
-            "'nutritional_facts_per_100g' (object with calories, protein, fat, and carbs)."
+        "Identify the raw food in this image. Return ONLY a JSON object with: "
+            "'name' (one word), 'cutting_safety_tips' (list of strings), "
+            "'nutritional_facts_per_100g' (object with calories, protein, fat, carbs), "
+            "and 'video_search_query' (a specific YouTube search string for cutting this item)."
     );
 
     final imagePart = DataPart('image/jpeg', imageBytes);

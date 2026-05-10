@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import '../UI/app_theme.dart';
+import './video_page.dart'; // Ensure this path is correct
 
 class FoodDetailPage extends StatelessWidget {
   final Map<String, dynamic> foodData;
@@ -9,87 +10,186 @@ class FoodDetailPage extends StatelessWidget {
   const FoodDetailPage({
     super.key,
     required this.foodData,
-    required this.imageBytes
+    required this.imageBytes,
   });
 
   @override
   Widget build(BuildContext context) {
-    final nutrition = foodData['nutritional_facts_per_100g'] ?? {};
-    final tips = List<String>.from(foodData['cutting_safety_tips'] ?? []);
+    // Extracting data with fallbacks
+    final String name = (foodData['name'] ?? "Food Item").toString().toUpperCase();
+    final List tips = foodData['cutting_safety_tips'] ?? [];
+    final Map nutrition = foodData['nutritional_facts_per_100g'] ?? {};
+    final String? videoId = foodData['youtube_video_id'];
 
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor.value,
       appBar: AppBar(
-        title: Text(foodData['name']?.toUpperCase() ?? "DETAILS"),
+        automaticallyImplyLeading: false, // Removes back arrow
+        centerTitle: true,
         backgroundColor: Colors.transparent,
-        foregroundColor: AppTheme.accentColor.value,
         elevation: 0,
+        title: Text(
+          name,
+          style: TextStyle(
+            color: AppTheme.accentColor.value,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.2,
+          ),
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.close, color: AppTheme.accentColor.value),
+            onPressed: () => Navigator.pop(context),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Image Header
-            ClipRRect(
-              borderRadius: BorderRadius.circular(20),
-              child: Image.memory(imageBytes, width: double.infinity, height: 250, fit: BoxFit.cover),
-            ),
-            const SizedBox(height: 25),
-
-            // Nutrition Section
-            _buildHeader("Nutritional Facts (100g)"),
-            Card(
-              color: Colors.white.withOpacity(0.05),
-              child: Padding(
-                padding: const EdgeInsets.all(15),
-                child: Column(
-                  children: [
-                    _buildNutriRow("Calories", "${nutrition['calories']}"),
-                    _buildNutriRow("Protein", "${nutrition['protein']}"),
-                    _buildNutriRow("Fat", "${nutrition['fat']}"),
-                    _buildNutriRow("Carbs", "${nutrition['carbs']}"),
-                  ],
+            // 1. IMAGE HEADER
+            Container(
+              height: 250,
+              width: double.infinity,
+              margin: const EdgeInsets.symmetric(horizontal: 20),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(30),
+                image: DecorationImage(
+                  image: MemoryImage(imageBytes),
+                  fit: BoxFit.cover,
                 ),
               ),
             ),
 
             const SizedBox(height: 25),
 
-            // Safety Tips Section
-            _buildHeader("Cutting Safety Tips"),
-            ...tips.map((tip) => Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(Icons.gpp_maybe, color: AppTheme.accentColor.value, size: 20),
-                  const SizedBox(width: 10),
-                  Expanded(child: Text(tip, style: TextStyle(fontSize: 16, color: AppTheme.accentColor.value))),
-                ],
+            // 2. NUTRITION GRID
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: _buildSectionTitle("Nutritional Value (100g)"),
+            ),
+            const SizedBox(height: 10),
+            _buildNutritionGrid(nutrition),
+
+            const SizedBox(height: 30),
+
+            // 3. SAFETY TIPS
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: _buildSectionTitle("Cutting Safety Tips"),
+            ),
+            ...tips.map((tip) => _buildTipTile(tip.toString())),
+
+            const SizedBox(height: 40),
+
+            // 4. ACTION BUTTON
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 30),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 60,
+                  child: ElevatedButton.icon(
+                    // Inside the ElevatedButton in food_detail_page.dart
+                    onPressed: () {
+                      final String query = foodData['video_search_query'] ?? "${foodData['name']} how to cut";
+
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => VideoDetailPage(searchQuery: query), // Passing query now
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.play_circle_fill, size: 28),
+                    label: const Text(
+                      "WATCH HOW TO CUT",
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.redAccent,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                      elevation: 5,
+                    ),
+                  ),
+                ),
               ),
-            )),
+            ),
+            const SizedBox(height: 50),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildHeader(String title) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: Text(title, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppTheme.accentColor.value)),
+  Widget _buildSectionTitle(String title) {
+    return Text(
+      title,
+      style: TextStyle(
+        fontSize: 20,
+        fontWeight: FontWeight.bold,
+        color: AppTheme.accentColor.value,
+      ),
     );
   }
 
-  Widget _buildNutriRow(String label, String value) {
+  Widget _buildNutritionGrid(Map data) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: GridView.count(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        crossAxisCount: 2,
+        childAspectRatio: 2.5,
+        mainAxisSpacing: 10,
+        crossAxisSpacing: 10,
         children: [
-          Text(label, style: const TextStyle(color: Colors.white60)),
-          Text(value, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+          _buildNutriItem("Calories", data['calories']),
+          _buildNutriItem("Protein", data['protein']),
+          _buildNutriItem("Fat", data['fat']),
+          _buildNutriItem("Carbs", data['carbs']),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNutriItem(String label, dynamic value) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(color: Colors.white10),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(label, style: const TextStyle(color: Colors.white60, fontSize: 12)),
+          Text(value?.toString() ?? "0", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTipTile(String tip) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+      padding: const EdgeInsets.all(15),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.03),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(Icons.shield_outlined, color: Colors.greenAccent, size: 20),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              tip,
+              style: const TextStyle(color: Colors.white70, fontSize: 14),
+            ),
+          ),
         ],
       ),
     );
