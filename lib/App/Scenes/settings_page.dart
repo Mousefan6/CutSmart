@@ -1,59 +1,71 @@
 import 'package:flutter/material.dart';
 import '../UI/menu_buttons.dart';
+import '../UI/app_theme.dart'; // Import your new theme file
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      // The tan background color
-      backgroundColor: const Color(0xFFE3D8CD),
-
-      appBar: AppBar(
-        centerTitle: true,
-        backgroundColor: const Color(0xFFE3D8CD),
-        elevation: 0,
-        // Manual back arrow themed to match your text color
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF7D5334)),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: GestureDetector(
-          onTap: () => Navigator.pop(context),
-          child: const Text(
-            'CutSmart',
-            style: TextStyle(
-              fontFamily: 'Georgia',
-              fontSize: 24,
-              fontStyle: FontStyle.italic,
-              fontWeight: FontWeight.w700,
-              color: Color(0xFF7D5334),
+    return ValueListenableBuilder(
+      valueListenable: AppTheme.backgroundColor,
+      builder: (context, Color bgColor, child) {
+        return Scaffold(
+          backgroundColor: bgColor,
+          appBar: AppBar(
+            centerTitle: true,
+            backgroundColor: bgColor,
+            elevation: 0,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back, color: AppTheme.accentColor.value),
+              onPressed: () => Navigator.pop(context),
             ),
-          ),
-        ),
-      ),
-
-      body: Column(
-        children: [
-          // Content of the Settings page goes here
-          const Expanded(
-            child: Center(
-              child: Text(
-                'User Settings',
-                style: TextStyle(
-                  color: Color(0xFF7D5334),
-                  fontSize: 20,
-                  fontWeight: FontWeight.w500,
-                ),
+            title: Text(
+              'CutSmart',
+              style: TextStyle(
+                fontFamily: 'Georgia',
+                fontSize: 24,
+                fontStyle: FontStyle.italic,
+                fontWeight: FontWeight.w700,
+                color: AppTheme.accentColor.value,
               ),
             ),
           ),
-
-          // Your custom menu bar at the bottom
-          const BottomMenuBar(),
-        ],
-      ),
+          body: Column(
+            children: [
+              Expanded(
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'User Settings',
+                        style: TextStyle(
+                          color: AppTheme.accentColor.value,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      // NEW THEME TOGGLE BUTTON
+                      ElevatedButton.icon(
+                        onPressed: () => AppTheme.toggleTheme(),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppTheme.accentColor.value,
+                          foregroundColor: bgColor,
+                        ),
+                        icon: const Icon(Icons.palette_outlined),
+                        label: const Text("CHANGE THEME"),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const BottomMenuBar(),
+            ],
+          ),
+        );
+      },
     );
   }
 }

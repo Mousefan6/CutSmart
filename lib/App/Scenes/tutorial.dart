@@ -1,4 +1,6 @@
+import 'package:cutsmart/App/Scenes/landing_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart'; // <-- Missing this
 import 'camera_page.dart'; // Ensure this path is correct
 
 class SnapPage extends StatelessWidget {

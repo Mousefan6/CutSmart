@@ -1,7 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart'; // <-- Missing this
 import 'tutorial.dart'; // This allows us to see SnapPage
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  try {
+    await dotenv.load(fileName: ".env");
+    debugPrint("Env loaded: ${dotenv.env['GEMINI_API_KEY'] != null}");
+  } catch (e) {
+    debugPrint("Failed to load .env: $e");
+  }
+
   runApp(const CutSmartApp());
 }
 
