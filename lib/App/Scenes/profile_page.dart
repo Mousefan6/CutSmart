@@ -18,7 +18,7 @@ class ProfilePage extends StatelessWidget {
           backgroundColor: AppTheme.backgroundColor.value,
 
           appBar: AppBar(
-            automaticallyImplyLeading: false, // Removes the back button
+            automaticallyImplyLeading: false,
             backgroundColor: Colors.transparent,
             elevation: 0,
             centerTitle: true,
