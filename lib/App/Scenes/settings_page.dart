@@ -2,11 +2,33 @@ import 'package:flutter/material.dart';
 import '../UI/menu_buttons.dart';
 import '../UI/app_theme.dart';
 
+import '../Utils/session_manager.dart';
+import 'login_page.dart';
+
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
 
-  @override
-  Widget build(BuildContext context) {
+  @override build(BuildContext context) {
+    return FutureBuilder<bool>(
+      future: SessionManager.instance.isLoggedIn(), // FOR ACTUAL PROFILE PAGE
+      builder: (context, snapshot) {
+        // While waiting for the async check
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(body: Center(child: CircularProgressIndicator()));
+        }
+
+        // If NOT logged in, show the Login Page instead
+        if (snapshot.data == false) {
+          return const LoginPage();
+        }
+
+        // If logged in, show the normal Settings UI
+        return _buildSettingsUI(context);
+      },
+    );
+  }
+
+  Widget _buildSettingsUI(BuildContext context) {
     return ValueListenableBuilder(
       valueListenable: AppTheme.backgroundColor,
       builder: (context, Color bgColor, child) {
@@ -45,6 +67,32 @@ class SettingsPage extends StatelessWidget {
                   _paletteCircle(ColorScene.night, const Color(0xFF424242), "Night"),
 
                 ],
+              ),
+
+              // LOGOUT BUTTON
+              const SizedBox(height: 60), // Space between palette and logout
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 40),
+                child: OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    minimumSize: const Size(double.infinity, 50),
+                    side: const BorderSide(color: Colors.redAccent, width: 2),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  onPressed: () {
+                    print("Logout pressed"); // EDIT FOR LOGOUT BUTTON
+                  },
+                  child: const Text(
+                    "LOGOUT",
+                    style: TextStyle(
+                      color: Colors.redAccent,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                ),
               ),
 
               const Spacer(),

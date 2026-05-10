@@ -35,14 +35,14 @@ class _RegisterPageState extends State<RegisterPage> {
       setState(() => message = "Please fill in all fields");
       return;
     }
-    final url = Uri.parse('http://10.0.2.2:5000/auth/register');
+    final url = Uri.parse("http://10.0.2.2:5000/auth/register");
     try {
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'username': username,
-          'email': email,
+          // 'email': email,
           'password': password,
         }),
       );
@@ -165,6 +165,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         child: ElevatedButton(
                           onPressed: () {
                             debugPrint("Registering: ${_usernameController.text}");
+                            register();
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppTheme.accentColor.value,
@@ -189,17 +190,21 @@ class _RegisterPageState extends State<RegisterPage> {
                       GestureDetector(
                         onTap: () => Navigator.pop(context),
                         child: RichText(
-                          text: const TextSpan(
-                            style: TextStyle(fontSize: 16, fontFamily: 'Georgia'),
+                          text: TextSpan(
+                            style: const TextStyle(fontSize: 16, fontFamily: 'Georgia'),
                             children: [
                               TextSpan(
                                 text: "Already have an account? ",
-                                style: TextStyle(color: Color(0xFF7D5334)),
+                                style: TextStyle(
+                                  color: AppTheme.accentColor.value,
+                                  decoration: TextDecoration.underline,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                               TextSpan(
                                 text: "Login",
                                 style: TextStyle(
-                                  color: Colors.blue,
+                                  color: AppTheme.accentColor.value,
                                   decoration: TextDecoration.underline,
                                   fontWeight: FontWeight.bold,
                                 ),
