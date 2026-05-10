@@ -40,21 +40,22 @@ class BottomMenuBar extends StatelessWidget {
                 isLarge: true,
                 onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const CameraPage())),
               ),
+              _menuButton(
+                context,
+                icon: Icons.history,
+                isLarge: true,
+                label: "History",
+                onTap: () => (),
+              ),
 
               _menuButton(
                 context,
                 icon: Icons.settings_outlined, // Fixed icon
                 label: "Settings",
-                isLarge: true,
                 onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const SettingsPage())),
               ),
 
-              _menuButton(
-                context,
-                icon: Icons.history,
-                label: "History",
-                onTap: () => (),
-              ),
+
             ],
           ),
         );
