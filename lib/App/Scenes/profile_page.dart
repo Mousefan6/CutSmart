@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../UI/Menu_buttons.dart';
+import '../UI/menu_buttons.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -8,7 +9,9 @@ void main() async {
   try {
     await dotenv.load(fileName: ".env");
   } catch (e) {
-    print("Error: Could not find .env file.");
+    if (kDebugMode) {
+      print("Error: Could not find .env file.");
+    }
   }
   runApp(const LandingApp());
 }

@@ -28,8 +28,7 @@ class SnapPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Expanded(
-                child: Image.asset(
-                  'assets/mousesnap1.png',
+                child: Image.asset('assets/mousesnap1.png',
                   fit: BoxFit.contain,
                 ),
               ),
