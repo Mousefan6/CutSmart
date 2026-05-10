@@ -2,7 +2,6 @@ import 'package:cutsmart/App/Scenes/landing_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-
 void main() {
   testWidgets('Profile page shows camera scanner button', (
     WidgetTester tester,

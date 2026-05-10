@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'dart:typed_data';
+
 import '../UI/Menu_buttons.dart';
-import './video_page.dart';
+import '../Utils/ai_service.dart';
 
 class CameraPage extends StatefulWidget {
   const CameraPage({super.key});
@@ -21,22 +24,33 @@ class _CameraPageState extends State<CameraPage> {
   @override
   void initState() {
     super.initState();
-    // Setup Gemini
+    final String apiKey = dotenv.env['GEMINI_API_KEY'] ?? '';
     _model = GenerativeModel(
       model: 'gemini-1.5-flash',
-      apiKey: '',
+      apiKey: apiKey,
     );
   }
 
   Future<void> _toggleCamera() async {
     if (_isCameraOn) {
       await _controller?.dispose();
-      setState(() => _isCameraOn = false);
+      if (mounted) setState(() => _isCameraOn = false);
     } else {
-      final cameras = await availableCameras();
-      _controller = CameraController(cameras.first, ResolutionPreset.medium);
-      await _controller!.initialize();
-      setState(() => _isCameraOn = true);
+      try {
+        final cameras = await availableCameras();
+        if (cameras.isEmpty) return;
+
+        _controller = CameraController(
+          cameras.first,
+          ResolutionPreset.medium,
+          enableAudio: false, // Disabling audio speeds up initialization
+        );
+
+        await _controller!.initialize();
+        if (mounted) setState(() => _isCameraOn = true);
+      } catch (e) {
+        debugPrint("Camera Error: $e");
+      }
     }
   }
 
@@ -47,34 +61,81 @@ class _CameraPageState extends State<CameraPage> {
     setState(() => _isScanning = true);
 
     try {
-      // 1. Get the image buffer (bytes)
       final XFile photo = await _controller!.takePicture();
       final Uint8List imageBytes = await photo.readAsBytes();
 
-      // 2. Prompt for gemini
-      // Need to set to only detect lowercase
-      final prompt = TextPart("Identify this food. Return only the name.");
+      final prompt = TextPart("Identify this food. Return only the name."); // PROMPT FOR GEMINI
       final imagePart = DataPart('image/jpeg', imageBytes);
 
-      // 3. Send to AI
       final response = await _model.generateContent([
         Content.multi([prompt, imagePart])
       ]);
 
-      _showResult(response.text ?? "Not found");
+      _showResult(response.text ?? "Not found", imageBytes);
     } finally {
       setState(() => _isScanning = false);
     }
   }
 
-  void _showResult(String name) {
+  Future<void> _handleImageUpload() async {
+    final ImagePicker picker = ImagePicker();
+    // This opens File Explorer on PC or Gallery on Mobile
+    final XFile? image = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 80, // Edit for Gemini processing speed, lower quality = faster processing
+    );
+
+    if (image != null) {
+      setState(() => _isScanning = true);
+      try {
+        // Convert to bytes for Gemini
+        final Uint8List imageBytes = await image.readAsBytes();
+        // Send to gemini
+        final String result = await AIService.identifyFood(imageBytes);
+        _showResult(result, imageBytes);
+      } catch (e) {
+        debugPrint("Upload error: $e");
+      } finally {
+        setState(() => _isScanning = false);
+      }
+    }
+  }
+
+  // void _showResult(String name) { // NAME ONLY!!!
+  //   showModalBottomSheet(
+  //     context: context,
+  //     builder: (c) => Container(
+  //       padding: const EdgeInsets.all(20),
+  //       height: 150,
+  //       width: double.infinity,
+  //       child: Text("AI Detected: $name", style: const TextStyle(fontSize: 20)),
+  //     ),
+  //   );
+  // }
+
+  void _showResult(String name, Uint8List? imageBytes) { // Shows image too
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true, // Allows sheet to expand
       builder: (c) => Container(
         padding: const EdgeInsets.all(20),
-        height: 150,
+        height: 400, // Make it taller to fit the image
         width: double.infinity,
-        child: Text("AI Detected: $name", style: const TextStyle(fontSize: 20)),
+        child: Column(
+          children: [
+            Text("AI Detected: $name", style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 15),
+            if (imageBytes != null)
+              Expanded(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(15),
+                  child: Image.memory(imageBytes, fit: BoxFit.cover),
+                ),
+              ),
+            const SizedBox(height: 10),
+            const Text("Testing Preview", style: TextStyle(color: Colors.grey)),
+          ],
+        ),
       ),
     );
   }
@@ -119,10 +180,14 @@ class _CameraPageState extends State<CameraPage> {
                 child: Stack(
                   children: [
                     Center(
-                      child: _isCameraOn && _controller != null
+                      child:
+                      _isCameraOn && _controller != null && _controller!.value.isInitialized
                           ? ClipRRect(
                         borderRadius: BorderRadius.circular(28),
-                        child: CameraPreview(_controller!),
+                        child: AspectRatio(
+                          aspectRatio: _controller!.value.aspectRatio,
+                          child: CameraPreview(_controller!),
+                        ),
                       )
                           : const Column(
                         mainAxisSize: MainAxisSize.min,
@@ -139,9 +204,7 @@ class _CameraPageState extends State<CameraPage> {
                       top: 15,
                       right: 15,
                       child: GestureDetector(
-                        onTap: () {
-                          print("Gallery button pressed");
-                        },
+                        onTap: _handleImageUpload,
                         child: Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
